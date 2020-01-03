@@ -1,5 +1,4 @@
 {
-  "basePath": "/",
   "consumes": [],
   "definitions": {
     "AdjustMultipleTransactionsRequest": {
@@ -175,6 +174,74 @@
       },
       "type": "object"
     },
+    "ApplyPaymentRequest": {
+      "description": "Apply Payment Request",
+      "properties": {
+        "TransactionsToApply": {
+          "description": "Transactions To Apply",
+          "items": {
+            "$ref": "#/definitions/TransactionsToApply"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ApplyPaymentResponse": {
+      "description": "Apply Payment Response Items",
+      "properties": {
+        "Items": {
+          "description": "Apply Payment Items Response",
+          "items": {
+            "$ref": "#/definitions/ApplyPaymentResponseItems"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "ValidationMessages": {
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ApplyPaymentResponseItems": {
+      "description": "Apply Payment Response Items",
+      "properties": {
+        "Entity": {
+          "type": "boolean"
+        },
+        "RequestItem": {
+          "$ref": "#/definitions/TransactionsToApply",
+          "description": "The request item"
+        },
+        "ValidationMessages": {
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ApplyToTransaction": {
+      "description": "Apply To Transaction",
+      "properties": {
+        "AmountToApply": {
+          "description": "set to the amount that will be applied.  This amount cannot exceed the amount of the transaction being applied. \r\n            Also, it cannot cause the total amount applied in the Apply To transaction to be greater than the apply to transaction amount. \r\n            i.e.  Cannot apply $100 to a charge transaction with an amount of $75.",
+          "format": "decimal",
+          "type": "number"
+        },
+        "ApplyToStudentAccountTransactionId": {
+          "description": "set to the Id of the transaction you are applying the payment or refund transaction to",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
     "EntityProperty": {
       "properties": {
         "EntityState": {
@@ -224,8 +291,360 @@
       },
       "type": "object"
     },
+    "LedgerCardPostPaymentResponseItem": {
+      "description": "Ledger Card Post Payment Response Item",
+      "properties": {
+        "Entity": {
+          "$ref": "#/definitions/StudentAccountTransactionEntity"
+        },
+        "RequestItem": {
+          "$ref": "#/definitions/PostPaymentRequestItem",
+          "description": "The request item"
+        },
+        "ValidationMessages": {
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "Object": {
       "properties": {},
+      "type": "object"
+    },
+    "PostChargeOrAdjustmentRequest": {
+      "description": "Post Charge or Adjustment Request",
+      "properties": {
+        "BillingTransactionCodeId": {
+          "description": "Billing Transaction Code Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "ClassSectionId": {
+          "description": "Class Section Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "Description": {
+          "description": "Description",
+          "type": "string"
+        },
+        "IsDateBilledUpdatedOnStudentEnrollmentPeriod": {
+          "description": "Only applicable if a StudentEnrollmentPeriodId is provided.  Set to true if you want the DateBilled property on the StudentEnrollmentPeriod record to be updated with the date this transaction is being posted.",
+          "type": "boolean"
+        },
+        "PaymentDueDate": {
+          "description": "If applicable, specify the date that a payment for this charge must be received by.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "Reference": {
+          "description": "Reference",
+          "type": "string"
+        },
+        "StudentAcademicYearId": {
+          "description": "Student Academic Year Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentAcademicYearPaymentPeriodId": {
+          "description": "student AcademicYear Payment Period Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentEnrollmentPeriodFeeId": {
+          "description": "Student Enrollment Period Fee Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentEnrollmentPeriodId": {
+          "description": "Specify the Id of the Student's Enrollment Period this transaction should be associated to.  If left null, the transaction will be associated to the Student but no //specific enrollment.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentId": {
+          "description": "Student Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "TermId": {
+          "description": "Term Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "TransactionAmount": {
+          "description": "Amount must be &gt; 0 even if type is C.   The internal logic will know to decrease the student's balance by the amount specified if the type is C.",
+          "format": "decimal",
+          "type": "number"
+        },
+        "TransactionDate": {
+          "description": "Transaction Date",
+          "format": "date-time",
+          "type": "string"
+        },
+        "Type": {
+          "description": "I= Invoice,  C= Credit adjustment, D= Debit adjustment.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PostChargeOrAdjustmentResponse": {
+      "description": "Post Charge or Adjustment Response",
+      "properties": {
+        "StudentAccountTransaction": {
+          "$ref": "#/definitions/StudentAccountTransactionEntity",
+          "description": "Student Account Transaction"
+        },
+        "ValidationMessages": {
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "PostPaymentRequest": {
+      "description": "Post Payment Request",
+      "properties": {
+        "LedgerCardPostPayment": {
+          "description": "Student Courses to Register",
+          "items": {
+            "$ref": "#/definitions/PostPaymentRequestItem"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "PostPaymentRequestItem": {
+      "description": "Student Course Registration Item",
+      "properties": {
+        "AcademicYearSequence": {
+          "description": "academic Year Sequence",
+          "format": "int32",
+          "type": "integer"
+        },
+        "AgencyCreditCardId": {
+          "description": "Agency CreditCard Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "AuthorizationNumber": {
+          "description": "Authorization Number",
+          "type": "string"
+        },
+        "CashDrawerId": {
+          "description": "CashDrawer Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "CashDrawerSessionId": {
+          "description": "CashDrawer Session Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "CashDrawerSessionOpeningBalance": {
+          "description": "CashDrawer Session Opening Balance",
+          "format": "double",
+          "type": "number"
+        },
+        "CashierUserId": {
+          "description": "CashierUser Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "CheckNumber": {
+          "description": "Check Number",
+          "type": "string"
+        },
+        "Description": {
+          "description": "Description",
+          "type": "string"
+        },
+        "PaymentType": {
+          "description": "payment Type",
+          "type": "string"
+        },
+        "Reference": {
+          "description": "Reference",
+          "type": "string"
+        },
+        "ScheduledDisbursementId": {
+          "description": "Scheduled Disbursement Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentAcademicYearPaymentPeriodId": {
+          "description": "student AcademicYear Payment Period Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentCreditCardId": {
+          "description": "Student Credit Card Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentEnrollmentPeriodId": {
+          "description": "student Enrollment Period Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentId": {
+          "description": "Student Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "TermId": {
+          "description": "Term Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "TransactionAmount": {
+          "description": "Transaction Amount",
+          "format": "decimal",
+          "type": "number"
+        },
+        "TransactionDate": {
+          "description": "Transaction Date",
+          "format": "date-time",
+          "type": "string"
+        },
+        "VerificationNumber": {
+          "description": "Verification Number",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PostPaymentResponse": {
+      "description": "Post Payment Response",
+      "properties": {
+        "Items": {
+          "description": "Ledger Card Post Payment Item Response",
+          "items": {
+            "$ref": "#/definitions/LedgerCardPostPaymentResponseItem"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "ValidationMessages": {
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "PostRefundRequest": {
+      "description": "Post Refund Request",
+      "properties": {
+        "AcademicYearSequence": {
+          "description": "Academic Year Sequence",
+          "format": "int32",
+          "type": "integer"
+        },
+        "BankAccountId": {
+          "description": "If not provided, then logic will execute to try and derive a default bank account.  If a default bank account cannot be determined then a validation error will be thrown as a BankAccountId value is required in order to save the refund transaction.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "CheckNumber": {
+          "description": "Check Number",
+          "type": "string"
+        },
+        "Description": {
+          "description": "Description",
+          "type": "string"
+        },
+        "IsRefundReadyToSend": {
+          "description": "Only applicable if refund is associated to a Student Award with a fund source of Pell or Direct Loan.   Set to 1 if the refund should be flagged as being ready to extract in the disbursement file sent to COD.",
+          "type": "boolean"
+        },
+        "PaidDisbursementId": {
+          "description": "Specify the student award disbursement that is being refunded if the refund transaction needs to be associated to a specific disbursement of a student award.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "Reference": {
+          "description": "Reference",
+          "type": "string"
+        },
+        "RefundAmount": {
+          "description": "Must be greater than 0.",
+          "format": "decimal",
+          "type": "number"
+        },
+        "RefundNote": {
+          "description": "The Note property on the RefundEntity will be updated with this value when the new RefundEntity instance is created.",
+          "type": "string"
+        },
+        "RefundSentDate": {
+          "description": "Refund Sent Date",
+          "format": "date-time",
+          "type": "string"
+        },
+        "ReturnMethod": {
+          "description": "C= Check, E= EFT, R= Credit Card, A= ACH, N= Net, M= Master Check",
+          "type": "string"
+        },
+        "StudentAcademicYearId": {
+          "description": "Student Academic Year Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentAcademicYearPaymentPeriodId": {
+          "description": "Student Academic Year Payment Period Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentAwardId": {
+          "description": "Specify the Id of the StudentAward that the refund will be associated to.  If not provided, then the refund will be processed as going to the student with no association to a fund source",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentCreditCardId": {
+          "description": "Student Credit Card Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentEnrollmentPeriodId": {
+          "description": "If not provided, then refund transaction will only be associated at the Student level.  If transaction should be associated to a specific enrollment, then specify the Id of the StudentEnrollmentPeriod the refund transaction will be associated to.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "StudentId": {
+          "description": "Student Id",
+          "format": "int32",
+          "type": "integer"
+        },
+        "TermId": {
+          "description": "TermId",
+          "format": "int32",
+          "type": "integer"
+        },
+        "TransactionDate": {
+          "description": "Transaction Date",
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PostRefundResponse": {
+      "description": "Post Refund Response",
+      "properties": {
+        "ValidationMessages": {
+          "items": {
+            "$ref": "#/definitions/ValidationMessage"
+          },
+          "type": "array"
+        }
+      },
       "type": "object"
     },
     "StudentAccountTransactionEntity": {
@@ -413,6 +832,10 @@
           "format": "int32",
           "type": "integer"
         },
+        "PaymentDueDate": {
+          "format": "date-time",
+          "type": "string"
+        },
         "PaymentPeriodId": {
           "format": "int32",
           "type": "integer"
@@ -537,6 +960,24 @@
       ],
       "type": "object"
     },
+    "TransactionsToApply": {
+      "description": "Transactions To Apply",
+      "properties": {
+        "ApplyToTransactionList": {
+          "description": "Apply To Transaction List",
+          "items": {
+            "$ref": "#/definitions/ApplyToTransaction"
+          },
+          "type": "array"
+        },
+        "StudentAccountTransactionId": {
+          "description": "set to the Id of the Payment or Refund transaction you are applying",
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
     "ValidationMessage": {
       "properties": {
         "Message": {
@@ -555,14 +996,143 @@
       "type": "object"
     }
   },
-  "host": "sisclientweb-900002.campusnexus.cloud",
+  "host": "localhost",
   "info": {
-    "description": "CampusNexus Student v20.0 Query API (Integration-StudentAccounting)",
-    "title": "Integration-StudentAccounting",
-    "version": "integration-studentaccounting"
+    "description": "All API calls related to Student Accounting.",
+    "title": "Student Accounting",
+    "version": "studentaccounting"
   },
   "parameters": {},
   "paths": {
+    "/api/student-accounting/ledger-chargeoradjustment-transactions": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "deprecated": false,
+        "operationId": "PostChargeOrAdjustment",
+        "parameters": [
+          {
+            "description": "Adjust Transactions Request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostChargeOrAdjustmentRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Post Charge or Adjustment",
+            "schema": {
+              "$ref": "#/definitions/PostChargeOrAdjustmentResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Failed Authorization"
+          }
+        },
+        "summary": "This method will post a charge transaction or a debit/credit adjustment transaction to the student's ledger card.  The scope of this operation will be to post a new transaction to the student's ledger card that will have a Type value of \"I\" - new charge/Invoice, \"C\" - Credit adjustment or \"D\" - Debit adjustment.",
+        "tags": [
+          "StudentAccounting"
+        ]
+      }
+    },
+    "/api/student-accounting/ledger-payment-transactions": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "deprecated": false,
+        "operationId": "StudentAccounting_PostPayment",
+        "parameters": [
+          {
+            "description": "Post Payment Request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostPaymentRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Student Account Transaction",
+            "schema": {
+              "$ref": "#/definitions/PostPaymentResponse"
+            }
+          },
+          "403": {
+            "description": "Failed Authorization"
+          }
+        },
+        "summary": "Post Payment",
+        "tags": [
+          "StudentAccounting"
+        ]
+      }
+    },
+    "/api/student-accounting/ledger-refund-transactions": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "deprecated": false,
+        "operationId": "PostRefund",
+        "parameters": [
+          {
+            "description": "Post Refund Request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostRefundRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Post Refund",
+            "schema": {
+              "$ref": "#/definitions/PostRefundResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Failed Authorization"
+          }
+        },
+        "summary": "This method will post a refund transaction to the ledger card.  If the refund transaction is to be linked to a student award, then the PaidDisbursementId  for the applicable student award disbursement that is being fully or partially refunded must be provided in the request.  If not provided, the refund transaction will not be associated to a student award disbursement and will be assumed to be a direct refund to the student.",
+        "tags": [
+          "StudentAccounting"
+        ]
+      }
+    },
     "/api/student-accounting/ledger-transactions": {
       "patch": {
         "consumes": [
@@ -571,7 +1141,7 @@
           "application/x-www-form-urlencoded"
         ],
         "deprecated": false,
-        "operationId": "StudentAccounting_AdjustTransactions",
+        "operationId": "AdjustTransactions",
         "parameters": [
           {
             "description": "Adjust Transactions Request",
@@ -607,11 +1177,52 @@
         ]
       }
     },
+    "/api/student-accounting/ledger-transactions-applypayments": {
+      "post": {
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "deprecated": false,
+        "operationId": "ApplyPayment",
+        "parameters": [
+          {
+            "description": "",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApplyPaymentRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Student Account Transaction",
+            "schema": {
+              "$ref": "#/definitions/ApplyPaymentResponse"
+            }
+          },
+          "403": {
+            "description": "Failed Authorization"
+          }
+        },
+        "summary": "This method will apply 1 or more payment transactions to 1 or more charge or debit adjustment transactions.\r\n            The amount of each payment transaction being applied can be the full amount or a partial amount.",
+        "tags": [
+          "StudentAccounting"
+        ]
+      }
+    },
     "/api/student-accounting/ledger-transactions/{id}": {
       "get": {
         "consumes": [],
         "deprecated": false,
-        "operationId": "StudentAccounting_GetLedgerTransactionById",
+        "operationId": "GetLedgerTransactionById",
         "parameters": [
           {
             "description": "Transaction Id",
@@ -649,7 +1260,7 @@
           "application/x-www-form-urlencoded"
         ],
         "deprecated": false,
-        "operationId": "StudentAccounting_AdjustTransactionById",
+        "operationId": "AdjustTransactionById",
         "parameters": [
           {
             "description": "Transaction Id",
@@ -697,20 +1308,8 @@
     "https",
     "http"
   ],
-  "security": [
-    {
-      "oauth2_auth": []
-    }
-  ],
-  "securityDefinitions": {
-    "oauth2_auth": {
-      "authorizationUrl": "https://login.windows.net/common/oauth2/authorize",
-      "flow": "accessCode",
-      "scopes": {},
-      "tokenUrl": "https://login.windows.net/common/oauth2/authorize",
-      "type": "oauth2"
-    }
-  },
+  "security": [],
+  "securityDefinitions": {},
   "swagger": "2.0",
   "tags": []
 }
